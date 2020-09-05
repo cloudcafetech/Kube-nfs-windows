@@ -3,16 +3,6 @@ A simple volume driver based on [Kubernetes' Flexvolume](https://github.com/kube
 
 It has been tested under Kubernetes versions:
 
-* 1.8.x
-* 1.9.x
-* 1.10.x
-* 1.11.x
-* 1.12.x
-* 1.13.x
-* 1.14.x
-* 1.15.x
-* 1.16.x
-* 1.17.x
 * 1.18.x
 
 ## DaemonSet Installation
@@ -74,49 +64,7 @@ The example above will install the driver in the path `$KUBELET_PLUGIN_DIRECTORY
 
 ## Example of Deployment
 The following is an example of Deployment that uses the volume driver.
-```yaml
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nfs-flex-vol
-  labels:
-    app: nfs-flex-vol
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nfs-flex-vol
-  template:
-    metadata:
-      labels:
-        app: nfs-flex-vol
-    spec:
-      nodeSelector:
-        beta.kubernetes.io/os: windows
-      tolerations:
-      - key: "os"
-        operator: "Equal"
-        value: "windows"
-        effect: "NoSchedule"
-      containers:
-      - name: nfs-flex-vol
-        image: mcr.microsoft.com/powershell:7.1.0-preview.5-nanoserver-1809
-        imagePullPolicy: IfNotPresent
-        command: ["pwsh.exe"]
-        args: ["/Command", "ping", "-t", "127.0.0.1", ">>", "/d/test.txt"]
-        volumeMounts:
-        - name: nfs-volume
-          mountPath: /d
-      volumes:
-      - name: nfs-volume
-        flexVolume:
-          driver: "nfs-win/nfs.cmd"
-          options:
-            # source can be in any of the following formats
-            # \\servername\share\path  (\'s will need to be escaped)
-            # nfs://servername/share/path
-            # //servername/share/path
-            #source: "nfs://xxx-xxx.cn-shenzhen.nas.aliyuncs.com/!"
-            source: "nfs://10.20.1.4/var/nfs/general"
-```
+
+Edit `demo-nfs-flex-volume.yaml` with NFS server and share details and deploy.
+
+```kubectl create -f demo-nfs-flex-volume.yaml```
