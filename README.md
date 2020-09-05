@@ -3,7 +3,7 @@ A simple volume driver based on [Kubernetes' Flexvolume](https://github.com/kube
 
 It has been tested under Kubernetes versions:
 
-* 1.18.x
+* AKS 1.18.x
 
 ## DaemonSet Installation
 When dealing with a large cluster, manually copying the driver to all hosts becomes inhuman. As proposed in Flexvolume’s documentation, the recommended driver deployment method is to have a DaemonSet install the driver cluster-wide automatically.
@@ -65,6 +65,6 @@ The example above will install the driver in the path `$KUBELET_PLUGIN_DIRECTORY
 ## Example of Deployment
 The following is an example of Deployment that uses the volume driver.
 
-Edit `demo-nfs-flex-volume.yaml` with NFS server and share details and deploy.
+Edit `demo-nfs-flex-volume.yaml` with NFS server and share details and deploy. And make sure sufficient permission in NFS share in NFS server (for UNIX it should be 777).
 
 ```kubectl create -f demo-nfs-flex-volume.yaml```
