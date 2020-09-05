@@ -68,3 +68,13 @@ The following is an example of Deployment that uses the volume driver.
 Edit `demo-nfs-flex-volume.yaml` with NFS server and share details and deploy. And make sure sufficient permission in NFS share in NFS server (for UNIX it should be 777).
 
 ```kubectl create -f demo-nfs-flex-volume.yaml```
+
+If Kubernetes PV & PVC style then use following deployment.
+
+```kubectl create -f win-nfs-flexvol-demo.yaml```
+
+### Reference
+
+https://www.yfdou.com/archives/kubernetes_nfs_Volume-_driver_for_windows.html
+
+
