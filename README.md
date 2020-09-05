@@ -25,7 +25,7 @@ Installing is a one time job. So, once you have verified that it’s completed, 
 ```kubectl delete -f winnfs-flex-volume.yaml```
 
 ## The Volume Plugin Directory
-As of today with Kubernetes v1.16, the kubelet’s default directory for volume plugins is `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` (for Linux node),  C:\usr\libexec\kubernetes\kubelet-plugins\volume\exec (for Windows node)in general this folder does not exit by deploying `winnfs-flex-volume.yaml` daemonset will create folder .  This could be different if your installation changed this directory using the `--volume-plugin-dir` parameter.
+As of today with Kubernetes v1.16, the kubelet’s default directory for volume plugins is `/usr/libexec/kubernetes/kubelet-plugins/volume/exec/` (for Linux node),  `C:\usr\libexec\kubernetes\kubelet-plugins\volume\exec` (for Windows node)in general this folder does not exit by deploying `winnfs-flex-volume.yaml` daemonset will create folder.  This could be different if your installation changed this directory using the `--volume-plugin-dir` parameter.
 
 Please, review the kubelet command line parameters (namely `--volume-plugin-dir`) and make sure it matches the directory where the driver will be installed.
 
@@ -49,10 +49,10 @@ For some installations, you may need to change the vendor + driver name. You can
           - pwsh.exe
           args:
           - /Command
-          - mkdir -Force c:\host\${DRIVER}~nfs.cmd;
-          - cp -Force c:\kubelet-plugins\flexvolume.ps1 c:\host\${DRIVER}~nfs.cmd;
-          - cp -Force c:\kubelet-plugins\nfs.cmd c:\host\${DRIVER}~nfs.cmd;
-          - cp -Force c:\kubelet-plugins\nfs.ps1 c:\host\${DRIVER}~nfs.cmd;
+          - mkdir -Force c:\host\$env:DRIVER~nfs.cmd;
+          - cp -Force c:\kubelet-plugins\flexvolume.ps1 c:\host\$env:DRIVER~nfs.cmd;
+          - cp -Force c:\kubelet-plugins\nfs.cmd c:\host\$env:DRIVER~nfs.cmd;
+          - cp -Force c:\kubelet-plugins\nfs.ps1 c:\host\$env:DRIVER~nfs.cmd;
           - cat c:\kubelet-plugins\Readme.md;
           - while ($true) {start-sleep -s 3600}
 
