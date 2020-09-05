@@ -407,6 +407,7 @@ data:
         ## windows cmd
         dism /online /enable-feature /featurename:ServicesForNFS-ServerAndClient
         dism /online /enable-feature /featurename:ClientForNFS-Infrastructure
+      Make sure sufficient permission in NFS share (777 for UNIX)
       Now you can delete this Daemonset.
 ---
 apiVersion: apps/v1
