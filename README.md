@@ -65,13 +65,84 @@ The example above will install the driver in the path `$KUBELET_PLUGIN_DIRECTORY
 ## Example of Deployment
 The following is an example of Deployment that uses the volume driver.
 
-Edit `demo-nfs-flex-volume.yaml` with NFS server and share details and deploy. And make sure sufficient permission in NFS share in NFS server (for UNIX it should be 777).
+Edit below with NFS server and share details and deploy. And make sure sufficient permission in NFS share in NFS server (for UNIX it should be 777).
 
-```kubectl create -f demo-nfs-flex-volume.yaml```
-
-If Kubernetes PV & PVC style then use following deployment.
-
-```kubectl create -f win-nfs-flexvol-demo.yaml```
+```
+PVCNAME=winfs
+cat <<EOF > nfs-flex-vol-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: $PVCNAME
+spec:
+ storageClassName: kubenfs-storage
+ accessModes:
+  - ReadWriteMany
+ resources:
+   requests:
+     storage: 50Mi
+EOF
+kubectl create -f nfs-flex-vol-pvc.yaml
+sleep 25
+NS=$(kubectl describe pvc $PVCNAME | grep -e Namespace: | cut -f2 -d : | sed 's/ //g')
+NV=$(kubectl describe pvc $PVCNAME | grep -e Name: -e Volume: | cut -f2 -d : | sed 's/ //g' | sed ':a; N; $!ba; s/\n/-/g')
+VOLNAME=$NS-$NV
+cat <<EOF > nfs-flex-vol-demo.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-flex-vol
+  labels:
+    app: nfs-flex-vol
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-flex-vol
+  template:
+    metadata:
+      labels:
+        app: nfs-flex-vol
+    spec:
+      nodeSelector:
+        beta.kubernetes.io/os: windows
+      tolerations:
+      - key: "os"
+        operator: "Equal"
+        value: "windows"
+        effect: "NoSchedule"
+      containers:
+      - name: nfs-flex-vol
+        image: mcr.microsoft.com/powershell:7.1.0-preview.5-nanoserver-1809
+        imagePullPolicy: IfNotPresent
+        command:
+        - pwsh.exe
+        args:
+        - /Command
+        - Write-Output "\$env:POD_NAME Started on \$env:NODENAME at \$(Get-Date)" >> /d/test.txt;
+        - ping -t 127.0.0.1 >> /d/test.txt
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NODENAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /d
+      volumes:
+      - name: nfs-volume
+        flexVolume:
+          driver: "nfs-win/nfs.cmd"
+          options:
+            # source should be following formats
+            # nfs://servername/share/path
+            source: "nfs://10.20.1.4/var/nfs/general/$VOLNAME/"
+EOF
+```
 
 ### Reference
 
