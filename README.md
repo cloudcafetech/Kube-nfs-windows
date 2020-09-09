@@ -62,6 +62,10 @@ For some installations, you may need to change the vendor + driver name. You can
 
 The example above will install the driver in the path `$KUBELET_PLUGIN_DIRECTORY/nfs-win~nfs.cmd/nfs.cmd`. For the most part, changig the `DRIVER` variable should be enough to make your installation unique to your needs.
 
+## Deploy NFS based persistent storage.
+
+```kubectl create -f kubenfs.yaml```
+
 ## Example of Deployment
 The following is an example of Deployment that uses the volume driver.
 
